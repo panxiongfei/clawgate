@@ -4,6 +4,7 @@ OpenClaw Adapter for ClawGate QA Framework
 Connects to local OpenClaw instance via CLI
 """
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -12,6 +13,11 @@ from typing import Any
 
 def call_openclaw(message: str) -> dict[str, Any]:
     """Call local openclaw agent and return response."""
+    # Use minimax for QA testing
+    env = {
+        **os.environ,
+        "OPENCLAW_MODEL": "minimax/MiniMax-M2.5",
+    }
     try:
         result = subprocess.run(
             ["openclaw", "agent", "--local", "--message", message, "--json", "--agent", "main"],
@@ -19,6 +25,7 @@ def call_openclaw(message: str) -> dict[str, Any]:
             text=True,
             timeout=120,
             check=False,
+            env=env,
         )
         
         if result.returncode != 0:
