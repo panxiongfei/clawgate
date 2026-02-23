@@ -1,0 +1,23 @@
+id: OC_TRACE_001
+suite: tracing
+priority: P0
+tags: [tracing, langfuse]
+enabled: true
+preconditions:
+  env: test
+turns:
+  - turn: 1
+    user_input: "Validate trace tags for this QA run."
+    must:
+      - type: trace_tag_exists
+        key: qa_run_id
+      - type: trace_tag_exists
+        key: case_id
+      - type: trace_tag_exists
+        key: git_sha
+      - type: trace_tag_exists
+        key: pr_id
+    should:
+      - type: text_contains_any
+        values: ["trace", "tag", "qa run"]
+

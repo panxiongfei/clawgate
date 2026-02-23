@@ -1,0 +1,29 @@
+id: OC_DISAMB_001
+suite: disambiguation
+priority: P0
+tags: [state_machine, disambiguation]
+enabled: true
+preconditions:
+  workspace: "/tmp"
+turns:
+  - turn: 1
+    user_input: "Find openclaw config."
+    must:
+      - type: tool_called
+        tool: workspace_search
+      - type: state_exists
+        key: candidate_list
+    should:
+      - type: text_contains_any
+        values: ["which", "candidate", "select", "config"]
+  - turn: 2
+    user_input: "The second one."
+    must:
+      - type: state_kept
+        key: candidate_list
+      - type: tool_called
+        tool: workspace_open
+    should:
+      - type: text_contains_any
+        values: ["opened", "selected", "path"]
+

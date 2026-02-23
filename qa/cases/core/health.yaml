@@ -1,0 +1,19 @@
+id: OC_HEALTH_001
+suite: health
+priority: P0
+tags: [health, gateway, node]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Check gateway and node health status."
+    must:
+      - type: tool_called
+        tool: gateway_health
+      - type: tool_called
+        tool: node_health
+    should:
+      - type: text_contains_any
+        values: ["healthy", "ok", "running"]
+

@@ -1,0 +1,8 @@
+[project]
+name = "clawgate"
+version = "0.1.0"
+description = "PR-gated QA harness for Openclaw with trace-based deterministic assertions."
+requires-python = ">=3.10"
+dependencies = [
+  "PyYAML>=6.0",
+]

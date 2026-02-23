@@ -1,0 +1,19 @@
+low:
+  key_case_pass_rate_min: 0.85
+  must_assert_pass_rate_min: 0.9
+  tool_error_rate_max: 0.1
+  p95_latency_regression_max: 0.3
+  pii_leak_allow: 0
+medium:
+  key_case_pass_rate_min: 0.9
+  must_assert_pass_rate_min: 0.95
+  tool_error_rate_max: 0.05
+  p95_latency_regression_max: 0.2
+  pii_leak_allow: 0
+high:
+  key_case_pass_rate_min: 0.95
+  must_assert_pass_rate_min: 0.98
+  tool_error_rate_max: 0.02
+  p95_latency_regression_max: 0.1
+  pii_leak_allow: 0
+

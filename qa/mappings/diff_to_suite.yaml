@@ -1,0 +1,14 @@
+rules:
+  - match_paths: ["src/tracing/**", "src/langfuse/**"]
+    add_suites: ["tracing", "tool_contract"]
+  - match_paths: ["src/agent/**", "src/planner/**"]
+    add_suites: ["state_machine", "disambiguation", "tool_contract"]
+  - match_paths: ["src/gateway/**"]
+    add_suites: ["health", "connectivity"]
+  - match_paths: ["src/git/**"]
+    add_suites: ["git_ops", "workspace_ops"]
+  - match_paths: ["src/workspace/**"]
+    add_suites: ["workspace_ops", "tool_contract"]
+defaults:
+  add_suites: ["health", "tracing"]
+
