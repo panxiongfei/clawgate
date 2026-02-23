@@ -105,7 +105,11 @@ def call_openclaw(message: str) -> dict[str, Any]:
 
 def fetch_langfuse_tools(trace_id: str) -> list[dict[str, Any]]:
     """Fetch tool calls from Langfuse API."""
+    import time
     try:
+        # Wait for Langfuse to finish writing (traces are async)
+        time.sleep(2)
+        
         cmd = [
             "curl", "-s", "-6",
             "-u", f"{LF_PUBLIC_KEY}:{LF_SECRET_KEY}",
@@ -122,23 +126,37 @@ def fetch_langfuse_tools(trace_id: str) -> list[dict[str, Any]]:
                 obs_type = obs.get("type")
                 obs_name = obs.get("name", "")
                 
-                # Look for tool-related observations
-                if obs_type in ["SPAN", "TOOL"] or "tool" in obs_name.lower():
-                    # Extract tool info
+                # Look for tool-related observations: SPAN with "Tool:" or type=TOOL
+                if (obs_type == "SPAN" and "tool" in obs_name.lower()) or obs_type == "TOOL":
                     tool_input = obs.get("input", {})
+                    
+                    # Parse input if it's a string
                     if isinstance(tool_input, str):
                         try:
                             tool_input = json.loads(tool_input)
                         except:
                             tool_input = {"raw": tool_input}
                     
-                    tool_name = obs.get("name")
+                    # Extract tool name - "Tool: exec" -> "exec"
+                    tool_name = obs_name
+                    if "tool: " in obs_name.lower():
+                        tool_name = obs_name.split(":", 1)[1].strip()
+                    elif isinstance(tool_input, dict) and "command" in tool_input:
+                        tool_name = "exec"
+                    
+                    # Extract args - for exec tool, use command
+                    args = {}
                     if isinstance(tool_input, dict):
-                        tool_name = tool_input.get("name", obs.get("name", "unknown"))
+                        if "command" in tool_input:
+                            args = {"command": tool_input["command"]}
+                        elif "args" in tool_input:
+                            args = tool_input["args"]
+                        else:
+                            args = tool_input
                     
                     tools.append({
                         "name": tool_name,
-                        "args": tool_input.get("args", tool_input) if isinstance(tool_input, dict) else {},
+                        "args": args,
                         "status_code": 200,
                         "latency_ms": int((obs.get("duration", 0) or 0) * 1000)
                     })
