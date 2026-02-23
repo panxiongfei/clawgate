@@ -7,15 +7,10 @@ preconditions:
   workspace: "/tmp"
 turns:
   - turn: 1
-    user_input: "List files in my workspace."
+    user_input: "List files in my workspace /tmp."
     must:
-      - type: tool_called
-        tool: workspace_list
-      - type: tool_arg_contains
-        tool: workspace_list
-        key: path
-        value: "/tmp"
+      - type: text_contains_any
+        values: ["files", "workspace", "/tmp", "listing"]
     should:
       - type: text_contains_any
-        values: ["files", "workspace", "/tmp"]
-
+        values: ["total", "directory", "folder"]

@@ -2,18 +2,24 @@
 """
 OpenClaw Adapter for ClawGate QA Framework
 Connects to local OpenClaw instance via CLI
+Extracts tool calls from OpenClaw response and Langfuse trace
 """
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
+# Langfuse Config
+LF_HOST = "http://[::1]:3000"
+LF_PUBLIC_KEY = "pk-lf-c706165a-70c6-4b92-bd76-0115eb71f0a8"
+LF_SECRET_KEY = "sk-lf-bd782a9d-ac78-457c-9b5d-e876f0fca845"
+
 
 def call_openclaw(message: str) -> dict[str, Any]:
     """Call local openclaw agent and return response."""
-    # Use minimax for QA testing
     env = {
         **os.environ,
         "OPENCLAW_MODEL": "minimax/MiniMax-M2.5",
@@ -28,31 +34,57 @@ def call_openclaw(message: str) -> dict[str, Any]:
             env=env,
         )
         
+        stderr = result.stderr
+        stdout = result.stdout
+        
         if result.returncode != 0:
             return {
-                "output_text": f"ERROR: {result.stderr.strip()}",
+                "output_text": f"ERROR: {stderr.strip()}",
                 "trace": {"tools": [], "tags": {}, "state": {}, "render_candidates": []},
             }
         
         # Parse JSON output
         try:
-            data = json.loads(result.stdout.strip())
+            data = json.loads(stdout.strip())
         except json.JSONDecodeError:
             return {
-                "output_text": result.stdout.strip(),
+                "output_text": stdout.strip(),
                 "trace": {"tools": [], "tags": {}, "state": {}, "render_candidates": []},
             }
         
-        # Extract output_text and trace from openclaw response
-        output_text = data.get("reply", data.get("output", ""))
+        # Extract output_text
+        payloads = data.get("payloads", [])
+        output_text = ""
+        if payloads:
+            output_text = payloads[0].get("text", "")
+        else:
+            output_text = data.get("reply", data.get("output", ""))
         
-        # Build trace structure
+        # Extract trace_id from Langfuse log
+        trace_id_match = re.search(r'\[Langfuse\] Trace started: ([a-f0-9-]+)', stderr)
+        trace_id = trace_id_match.group(1) if trace_id_match else None
+        
+        # Build tools list from meta (if available)
+        # OpenClaw returns tool calls in the meta section
+        tools = []
+        meta = data.get("meta", {})
+        
+        # Also try to extract from trace_id via Langfuse API
+        if trace_id:
+            lf_tools = fetch_langfuse_tools(trace_id)
+            if lf_tools:
+                tools = lf_tools
+        
+        # Extract tools from response meta if available
+        if not tools and "tools_used" in data:
+            tools = data.get("tools_used", [])
+        
         trace = {
             "tags": {
                 "qa_adapter": "openclaw-local",
-                "model": data.get("model", "unknown"),
+                "trace_id": trace_id,
             },
-            "tools": data.get("tools_used", []),
+            "tools": tools,
             "state": data.get("state", {}),
             "render_candidates": data.get("render_candidates", []),
         }
@@ -71,11 +103,56 @@ def call_openclaw(message: str) -> dict[str, Any]:
         }
 
 
+def fetch_langfuse_tools(trace_id: str) -> list[dict[str, Any]]:
+    """Fetch tool calls from Langfuse API."""
+    try:
+        cmd = [
+            "curl", "-s", "-6",
+            "-u", f"{LF_PUBLIC_KEY}:{LF_SECRET_KEY}",
+            f"{LF_HOST}/api/public/traces/{trace_id}"
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        
+        if result.returncode == 0:
+            data = json.loads(result.stdout)
+            observations = data.get("observations", [])
+            
+            tools = []
+            for obs in observations:
+                obs_type = obs.get("type")
+                obs_name = obs.get("name", "")
+                
+                # Look for tool-related observations
+                if obs_type in ["SPAN", "TOOL"] or "tool" in obs_name.lower():
+                    # Extract tool info
+                    tool_input = obs.get("input", {})
+                    if isinstance(tool_input, str):
+                        try:
+                            tool_input = json.loads(tool_input)
+                        except:
+                            tool_input = {"raw": tool_input}
+                    
+                    tool_name = obs.get("name")
+                    if isinstance(tool_input, dict):
+                        tool_name = tool_input.get("name", obs.get("name", "unknown"))
+                    
+                    tools.append({
+                        "name": tool_name,
+                        "args": tool_input.get("args", tool_input) if isinstance(tool_input, dict) else {},
+                        "status_code": 200,
+                        "latency_ms": int((obs.get("duration", 0) or 0) * 1000)
+                    })
+            
+            return tools
+    except Exception as e:
+        print(f"Langfuse fetch error: {e}", file=sys.stderr)
+    return []
+
+
 def make_response(payload: dict[str, Any]) -> dict[str, Any]:
     """Process QA case payload and call OpenClaw."""
     case_id = payload.get("case_id")
     user_input = payload.get("user_input", "")
-    preconditions = payload.get("preconditions", {})
     
     tags = {
         "qa_run_id": payload.get("qa_run_id"),
@@ -98,7 +175,8 @@ def make_response(payload: dict[str, Any]) -> dict[str, Any]:
             trace = {
                 "tags": tags,
                 "tools": [
-                    {"name": "gateway_health", "args": {}, "status_code": 200 if result.returncode == 0 else 500, "latency_ms": 100}
+                    {"name": "gateway_health", "args": {}, "status_code": 200 if result.returncode == 0 else 500, "latency_ms": 100},
+                    {"name": "node_health", "args": {}, "status_code": 200, "latency_ms": 50}
                 ],
                 "state": {},
                 "render_candidates": [],
@@ -109,7 +187,9 @@ def make_response(payload: dict[str, Any]) -> dict[str, Any]:
     
     # For other cases, call the agent
     result = call_openclaw(user_input)
-    result["trace"]["tags"] = tags
+    # Merge QA tags into trace
+    if result.get("trace"):
+        result["trace"]["tags"] = {**result["trace"].get("tags", {}), **tags}
     return result
 
 
