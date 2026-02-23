@@ -107,9 +107,62 @@ def fetch_langfuse_tools(trace_id: str) -> list[dict[str, Any]]:
     """Fetch tool calls from Langfuse API."""
     import time
     try:
-        # Wait for Langfuse to finish writing (traces are async)
-        time.sleep(2)
-        
+        # Wait for Langfuse to finish writing (traces are async) - wait up to 3 minutes
+        for attempt in range(18):  # 18 * 10s = 3 minutes
+            time.sleep(10)
+            
+            cmd = [
+                "curl", "-s", "-6",
+                "-u", f"{LF_PUBLIC_KEY}:{LF_SECRET_KEY}",
+                f"{LF_HOST}/api/public/traces/{trace_id}"
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                observations = data.get("observations", [])
+                
+                # If we have observations with tool calls, process them
+                tool_calls = [o for o in observations if o.get("type") == "SPAN" and "tool" in o.get("name", "").lower()]
+                if tool_calls:
+                    tools = []
+                    for obs in tool_calls:
+                        obs_name = obs.get("name", "")
+                        tool_input = obs.get("input", {})
+                        
+                        # Parse input if it's a string
+                        if isinstance(tool_input, str):
+                            try:
+                                tool_input = json.loads(tool_input)
+                            except:
+                                tool_input = {"raw": tool_input}
+                        
+                        # Extract tool name - "Tool: exec" -> "exec"
+                        tool_name = obs_name
+                        if "tool: " in obs_name.lower():
+                            tool_name = obs_name.split(":", 1)[1].strip()
+                        elif isinstance(tool_input, dict) and "command" in tool_input:
+                            tool_name = "exec"
+                        
+                        # Extract args - for exec tool, use command
+                        args = {}
+                        if isinstance(tool_input, dict):
+                            if "command" in tool_input:
+                                args = {"command": tool_input["command"]}
+                            elif "args" in tool_input:
+                                args = tool_input["args"]
+                            else:
+                                args = tool_input
+                        
+                        tools.append({
+                            "name": tool_name,
+                            "args": args,
+                            "status_code": 200,
+                            "latency_ms": int((obs.get("duration", 0) or 0) * 1000)
+                        })
+                    return tools
+                    
+        # Final attempt after waiting
         cmd = [
             "curl", "-s", "-6",
             "-u", f"{LF_PUBLIC_KEY}:{LF_SECRET_KEY}",
