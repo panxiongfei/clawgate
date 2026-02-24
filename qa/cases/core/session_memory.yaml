@@ -1,0 +1,56 @@
+id: OC_MEM_SESSION_001
+suite: memory
+priority: P0
+tags: [memory, session, experimental]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Check if session memory is enabled and sessions directory exists."
+    must:
+      - type: tool_called
+        tool: gateway_health
+      - type: directory_exists
+        path: ~/.openclaw/agents/main/sessions/
+    should:
+      - type: text_contains_any
+        values: ["session", "memory", "experimental", "enabled"]
+
+---
+id: OC_MEM_SESSION_002
+suite: memory
+priority: P1
+tags: [memory, session, conversation]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Ask about our previous discussion on gateway root cause."
+    must:
+      - type: tool_called
+        tool: memory_search
+    should:
+      - type: text_contains_any
+        values: ["gateway", "root cause", "previous", "conversation"]
+
+---
+id: OC_MEM_SESSION_003
+suite: memory
+priority: P1
+tags: [memory, session, sync]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Write the solution to MEMORY.md and verify auto-sync re-indexing."
+    must:
+      - type: tool_called
+        tool: memory_search
+      - type: tool_called
+        tool: gateway_health
+    should:
+      - type: text_contains_any
+        values: ["sync", "watch", "re-index", "vector"]

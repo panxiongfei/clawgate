@@ -1,0 +1,36 @@
+id: OC_MEM_INDEX_001
+suite: memory
+priority: P0
+tags: [memory, indexing, sqlite, gateway]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Check if memory index database is initialized and ready."
+    must:
+      - type: tool_called
+        tool: gateway_health
+      - type: file_exists
+        path: ~/.openclaw/memory/main.sqlite
+    should:
+      - type: text_contains_any
+        values: ["index", "ready", "vector"]
+
+---
+id: OC_MEM_INDEX_002
+suite: memory
+priority: P1
+tags: [memory, indexing, reindex]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Trigger a full reindex of memory after config change."
+    must:
+      - type: tool_called
+        tool: memory_search
+    should:
+      - type: text_contains_any
+        values: ["index", "reindex", "complete", "vector"]

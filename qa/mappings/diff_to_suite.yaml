@@ -9,6 +9,7 @@ rules:
     add_suites: ["git_ops", "workspace_ops"]
   - match_paths: ["src/workspace/**"]
     add_suites: ["workspace_ops", "tool_contract"]
+  - match_paths: ["src/memory/**", "src/config/**"]
+    add_suites: ["memory"]
 defaults:
-  add_suites: ["health", "tracing"]
-
+  add_suites: ["health", "tracing", "memory"]

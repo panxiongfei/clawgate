@@ -17,3 +17,38 @@ turns:
       - type: text_contains_any
         values: ["healthy", "ok", "running"]
 
+---
+id: OC_HEALTH_002
+suite: health
+priority: P0
+tags: [health, heartbeat, feishu, discord]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Verify heartbeat connections to Feishu and Discord are active."
+    must:
+      - type: tool_called
+        tool: gateway_health
+    should:
+      - type: text_contains_any
+        values: ["feishu", "discord", "connected", "heartbeat", "active"]
+
+---
+id: OC_HEALTH_003
+suite: health
+priority: P1
+tags: [health, heartbeat, agent]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Check agent heartbeat status and last heartbeat timestamp."
+    must:
+      - type: tool_called
+        tool: gateway_health
+    should:
+      - type: text_contains_any
+        values: ["heartbeat", "agent", "last", "timestamp"]
