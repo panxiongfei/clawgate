@@ -9,10 +9,12 @@ import yaml
 
 def read_yaml(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as f:
-        data = yaml.safe_load(f) or {}
-    if not isinstance(data, dict):
-        raise ValueError(f"YAML must be object: {path}")
-    return data
+        # Support multi-document YAML (separated by ---)
+        docs = list(yaml.safe_load_all(f))
+        if len(docs) == 1:
+            return docs[0] or {}
+        # For multi-doc YAML, return list of all documents
+        return {"_multi_doc": True, "documents": [d or {} for d in docs]}
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
