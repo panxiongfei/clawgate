@@ -81,6 +81,18 @@ def _evaluate(assertion: dict[str, Any], record: dict[str, Any]) -> tuple[bool, 
         values = values if isinstance(values, list) else []
         ok = _text_contains_any(text, [str(v) for v in values])
         return ok, "text_contains_any"
+    if atype == "file_exists":
+        # Check if file exists in trace state
+        path = assertion.get("path", "")
+        state = trace.get("state", {})
+        exists = state.get("exists", False) and state.get("is_file", False)
+        return exists, f"file_exists({path})"
+    if atype == "directory_exists":
+        # Check if directory exists in trace state
+        path = assertion.get("path", "")
+        state = trace.get("state", {})
+        exists = state.get("exists", False) and state.get("is_dir", False)
+        return exists, f"directory_exists({path})"
     return False, f"unsupported_assertion_type({atype})"
 
 
