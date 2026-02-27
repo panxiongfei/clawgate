@@ -1,0 +1,25 @@
+---
+# QAClaw Test Cases - Batch Processing
+_id: QA_TWO_STEP_201
+name: Batch Processing - Multiple Inputs
+description: Test batch processing capability
+suite: qaclaws
+priority: P2
+turns:
+  - turn: 1
+    user_input: "查销售额,查订单,查库存"  # Multiple intents
+    must:
+      - path: total_processed
+        gte: 3
+---
+_id: QA_TWO_STEP_202
+name: Cost Tracking
+description: Verify cost tracking works
+suite: qaclaws
+priority: P2
+turns:
+  - turn: 1
+    user_input: "测试成本追踪"
+    must:
+      - path: cost_saved
+        gt: 0
