@@ -1,0 +1,44 @@
+---
+# QAClaw Test Cases - Quick Pass Scenarios
+_id: QA_TWO_STEP_001
+name: Quick Pass - Normal Intent
+description: Verify normal user intent passes quick check
+suite: qaclaws
+priority: P1
+turns:
+  - turn: 1
+    user_input: "帮我查一下上个季度的销售额"
+    must:
+      - path: step
+        eq: "quick_pass"
+      - path: confidence
+        gte: 0.8
+    should:
+      - path: model
+        eq: "qwen3.5-32b"
+---
+_id: QA_TWO_STEP_002
+name: Quick Pass - Simple Query
+description: Simple data query should quick pass
+suite: qaclaws
+priority: P1
+turns:
+  - turn: 1
+    user_input: "今天天气怎么样"
+    must:
+      - path: step
+        eq: "quick_pass"
+      - path: confidence
+        gte: 0.8
+---
+_id: QA_TWO_STEP_003
+name: Quick Pass - Clear Instruction
+description: Clear instructions should quick pass
+suite: qaclaws
+priority: P2
+turns:
+  - turn: 1
+    user_input: "帮我打开计算器"
+    must:
+      - path: step
+        eq: "quick_pass"

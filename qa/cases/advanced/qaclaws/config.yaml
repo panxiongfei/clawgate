@@ -1,0 +1,33 @@
+# QAClaw Configuration
+
+two_step_assertion:
+  # Default confidence threshold (0.8)
+  # >= threshold = quick pass
+  # < threshold = double check
+  threshold: 0.8
+  
+  # Model configuration
+  models:
+    small: qwen3.5-32b
+    large: qwen3.5-plus
+  
+  # Cost per 1K tokens
+  cost:
+    small: 0.001
+    large: 0.01
+  
+  # Performance options
+  cache:
+    enabled: true
+    ttl_seconds: 3600
+  
+  batch:
+    enabled: true
+    default_size: 10
+    timeout_seconds: 300
+
+# Test configuration
+test:
+  default_suite: qaclaws
+  priority_order: ["P0", "P1", "P2"]
+  timeout_seconds: 30

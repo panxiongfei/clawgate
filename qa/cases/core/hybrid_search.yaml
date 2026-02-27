@@ -1,0 +1,52 @@
+id: OC_MEM_HYBRID_001
+suite: memory
+priority: P0
+tags: [memory, hybrid, search, embedding]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Search for MEMORY.md using hybrid search with semantic matching."
+    must:
+      - type: tool_called
+        tool: memory_search
+    should:
+      - type: text_contains_any
+        values: ["MEMORY.md", "memory", "vector", "hybrid"]
+
+---
+id: OC_MEM_HYBRID_002
+suite: memory
+priority: P1
+tags: [memory, hybrid, keyword, bm25]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Search using exact keyword match for schedule_agent_heartbeats.sh"
+    must:
+      - type: tool_called
+        tool: memory_search
+    should:
+      - type: text_contains_any
+        values: ["schedule_agent_heartbeats.sh", "keyword", "bm25", "exact"]
+
+---
+id: OC_MEM_HYBRID_003
+suite: memory
+priority: P1
+tags: [memory, hybrid, config]
+enabled: true
+preconditions:
+  env: local
+turns:
+  - turn: 1
+    user_input: "Verify hybrid search config is enabled with vectorWeight 0.6 and textWeight 0.4"
+    must:
+      - type: tool_called
+        tool: gateway_health
+    should:
+      - type: text_contains_any
+        values: ["hybrid", "enabled", "0.6", "0.4"]

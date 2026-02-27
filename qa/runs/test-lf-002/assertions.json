@@ -1,0 +1,78 @@
+{
+  "risk": "medium",
+  "summary": {
+    "turns_total": 4,
+    "turns_passed": 2,
+    "cases_total": 3,
+    "cases_passed": 2,
+    "key_case_pass_rate": 0.6666666666666666,
+    "must_assert_total": 8,
+    "must_assert_passed": 6,
+    "must_assert_pass_rate": 0.75,
+    "should_assert_total": 4,
+    "should_assert_passed": 1,
+    "should_assert_pass_rate": 0.25,
+    "tool_calls_total": 2,
+    "tool_errors_total": 0,
+    "tool_error_rate": 0.0,
+    "p95_latency_ms": 100.0,
+    "pii_leak_count": 0
+  },
+  "gate_result": "BLOCK",
+  "gate_reasons": [
+    "key_case_pass_rate below threshold",
+    "must_assert_pass_rate below threshold"
+  ],
+  "turn_results": [
+    {
+      "qa_run_id": "test-lf-002",
+      "case_id": "OC_HEALTH_001",
+      "suite": "health",
+      "turn": 1,
+      "turn_passed": true,
+      "failed_must": [],
+      "failed_should": [],
+      "output_text": "│\n◇  Doctor warnings ──────────────────────────────────────────╮\n│                                                            │\n│  - State dir migration skipped: target already exists      │\n│    (/Users/peterpan/.openclaw). Remove or merge manually.  │\n│                                                            │\n├────────────────────────────────────────────────────────────╯\n│\n◇  Doctor warnings ───────────────────────────────────────────────────╮\n│                                                                     │\n│  - channels.feishu.allowFrom: set to [\"*\"] (required by             │\n│    dmPolicy=\"open\")                                                 │\n│  - Run \"openclaw doctor --fix\" to add missing allowFrom wildcards.  │\n│                                                                     │\n├─────────────────────────────────────────────────────────────────────╯\nService: LaunchAgent (loaded)\nFile logs: /tmp/openclaw/openclaw-2026-02-23.log\nCommand: /opt/homebrew/Cellar/node/25.6.1/bin/node /Users/peterpan/AI/openclaw/dist/index.js gateway --port 18789\nService file: ~/Library/LaunchAgents/ai.openclaw.gateway.plist\nService env: OPENCLAW_GATEWAY_PORT=18789\n\nConfig (cli): ~/.openclaw/openclaw.json\nConfig (service): ~/.openclaw/openclaw.json\n\nGateway: bind=lan (0.0.0.0), port=18789 (service args)\nProbe target: ws://172.30.38.200:18789\nDashboard: http://172.30.38.200:18789/\nProbe note: bind=lan listens on 0.0.0.0 (all interfaces); probing via 172.30.38.200.\n\nRuntime: running (pid 99800, state active)\nWarm-up: launch agents can take a few seconds. Try again shortly.\n\nListening: *:18789\n\n\nTroubles: run openclaw status\nTroubleshooting: https://docs.openclaw.ai/troubleshooting\n"
+    },
+    {
+      "qa_run_id": "test-lf-002",
+      "case_id": "OC_TRACE_001",
+      "suite": "tracing",
+      "turn": 1,
+      "turn_passed": true,
+      "failed_must": [],
+      "failed_should": [
+        "text_contains_any"
+      ],
+      "output_text": "ERROR: [plugins] plugins.allow is empty; discovered non-bundled plugins may auto-load: langfuse-tracker (/Users/peterpan/.openclaw/extensions/langfuse-tracker/index.ts). Set plugins.allow to explicit trusted ids.\n[plugins] langfuse-tracker: loaded without install/load-path provenance; treat as untracked local code and pin trust via plugins.allow or install records (/Users/peterpan/.openclaw/extensions/langfuse-tracker/index.ts)\n[diagnostic] lane task error: lane=main durationMs=15049 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=15067 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=main durationMs=1777 error=\"FailoverError: OAuth token refresh failed for qwen-portal: Qwen OAuth refresh token expired or invalid. Re-authenticate with `openclaw models auth login --provider qwen-portal`.. Please try again or re-authenticate.\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=1787 error=\"FailoverError: OAuth token refresh failed for qwen-portal: Qwen OAuth refresh token expired or invalid. Re-authenticate with `openclaw models auth login --provider qwen-portal`.. Please try again or re-authenticate.\"\n[diagnostic] lane task error: lane=main durationMs=10621 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=10636 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=main durationMs=10645 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=10660 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=main durationMs=10611 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=10636 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=main durationMs=10614 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=10649 error=\"Error: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\nError: All models failed (6): minimax/MiniMax-M2.5: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout) | qwen-portal/coder-model: OAuth token refresh failed for qwen-portal: Qwen OAuth refresh token expired or invalid. Re-authenticate with `openclaw models auth login --provider qwen-portal`.. Please try again or re-authenticate. (auth) | local-ollama/qwen3:14b: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout) | google-antigravity/gemini-3-flash: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout) | openrouter/openrouter/free: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout) | kimi-coding/k2p5: session file locked (timeout 10000ms): pid=44896 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout)"
+    },
+    {
+      "qa_run_id": "test-lf-002",
+      "case_id": "OC_GIT_001",
+      "suite": "git_ops",
+      "turn": 1,
+      "turn_passed": false,
+      "failed_must": [
+        "tool_called(git_status)"
+      ],
+      "failed_should": [
+        "text_contains_any"
+      ],
+      "output_text": "ERROR: timeout after 120s"
+    },
+    {
+      "qa_run_id": "test-lf-002",
+      "case_id": "OC_GIT_001",
+      "suite": "git_ops",
+      "turn": 2,
+      "turn_passed": false,
+      "failed_must": [
+        "tool_called(git_show)"
+      ],
+      "failed_should": [
+        "text_contains_any"
+      ],
+      "output_text": "ERROR: [plugins] plugins.allow is empty; discovered non-bundled plugins may auto-load: langfuse-tracker (/Users/peterpan/.openclaw/extensions/langfuse-tracker/index.ts). Set plugins.allow to explicit trusted ids.\n[plugins] langfuse-tracker: loaded without install/load-path provenance; treat as untracked local code and pin trust via plugins.allow or install records (/Users/peterpan/.openclaw/extensions/langfuse-tracker/index.ts)\n[diagnostic] lane task error: lane=main durationMs=12829 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=12844 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=main durationMs=1238 error=\"FailoverError: OAuth token refresh failed for qwen-portal: Qwen OAuth refresh token expired or invalid. Re-authenticate with `openclaw models auth login --provider qwen-portal`.. Please try again or re-authenticate.\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=1247 error=\"FailoverError: OAuth token refresh failed for qwen-portal: Qwen OAuth refresh token expired or invalid. Re-authenticate with `openclaw models auth login --provider qwen-portal`.. Please try again or re-authenticate.\"\n[diagnostic] lane task error: lane=main durationMs=10682 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=10713 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=main durationMs=10693 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=10723 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=main durationMs=10630 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=10651 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=main durationMs=10603 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\n[diagnostic] lane task error: lane=session:agent:main:main durationMs=10625 error=\"Error: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock\"\nError: All models failed (6): minimax/MiniMax-M2.5: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout) | qwen-portal/coder-model: OAuth token refresh failed for qwen-portal: Qwen OAuth refresh token expired or invalid. Re-authenticate with `openclaw models auth login --provider qwen-portal`.. Please try again or re-authenticate. (auth) | local-ollama/qwen3:14b: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout) | google-antigravity/gemini-3-flash: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout) | openrouter/openrouter/free: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout) | kimi-coding/k2p5: session file locked (timeout 10000ms): pid=45407 /Users/peterpan/.openclaw/agents/main/sessions/313f78cb-ddde-4f41-996e-6141eb9a838c.jsonl.lock (timeout)"
+    }
+  ]
+}

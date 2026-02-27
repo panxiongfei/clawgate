@@ -65,9 +65,24 @@ def main() -> int:
     records: list[dict[str, Any]] = []
     for case_item in selected.get("cases", []):
         case_path = Path(case_item["path"])
+        # Use case_id from selected_cases.json (already extracted from multi-doc YAML)
+        case_id = case_item.get("id")
         case_payload = read_yaml(case_path)
-        case_id = case_payload.get("id")
-        suite = case_payload.get("suite")
+        
+        # Handle multi-document YAML: find the matching document
+        if isinstance(case_payload, dict) and case_payload.get("_multi_doc"):
+            # Find the document with matching id
+            matching_doc = None
+            for doc in case_payload.get("documents", []):
+                if doc.get("id") == case_id:
+                    matching_doc = doc
+                    break
+            if matching_doc:
+                case_payload = matching_doc
+            else:
+                case_payload = {}
+        
+        suite = case_payload.get("suite", case_item.get("suite"))
         preconditions = case_payload.get("preconditions", {})
         for turn in case_payload.get("turns", []):
             payload = {

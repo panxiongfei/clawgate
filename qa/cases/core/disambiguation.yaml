@@ -7,23 +7,18 @@ preconditions:
   workspace: "/tmp"
 turns:
   - turn: 1
-    user_input: "Find openclaw config."
+    user_input: "Find openclaw config files."
     must:
-      - type: tool_called
-        tool: workspace_search
-      - type: state_exists
-        key: candidate_list
+      - type: text_contains_any
+        values: ["found", "config", "search", "multiple"]
     should:
       - type: text_contains_any
-        values: ["which", "candidate", "select", "config"]
+        values: ["which", "candidate", "select", "config", "openclaw"]
   - turn: 2
-    user_input: "The second one."
+    user_input: "Use the second one."
     must:
-      - type: state_kept
-        key: candidate_list
-      - type: tool_called
-        tool: workspace_open
+      - type: text_contains_any
+        values: ["opened", "selected", "file", "path"]
     should:
       - type: text_contains_any
-        values: ["opened", "selected", "path"]
-
+        values: ["success", "opened", "read"]

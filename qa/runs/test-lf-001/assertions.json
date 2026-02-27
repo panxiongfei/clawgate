@@ -1,0 +1,35 @@
+{
+  "risk": "medium",
+  "summary": {
+    "turns_total": 1,
+    "turns_passed": 1,
+    "cases_total": 1,
+    "cases_passed": 1,
+    "key_case_pass_rate": 1.0,
+    "must_assert_total": 2,
+    "must_assert_passed": 2,
+    "must_assert_pass_rate": 1.0,
+    "should_assert_total": 1,
+    "should_assert_passed": 1,
+    "should_assert_pass_rate": 1.0,
+    "tool_calls_total": 2,
+    "tool_errors_total": 0,
+    "tool_error_rate": 0.0,
+    "p95_latency_ms": 100.0,
+    "pii_leak_count": 0
+  },
+  "gate_result": "PASS",
+  "gate_reasons": [],
+  "turn_results": [
+    {
+      "qa_run_id": "test-lf-001",
+      "case_id": "OC_HEALTH_001",
+      "suite": "health",
+      "turn": 1,
+      "turn_passed": true,
+      "failed_must": [],
+      "failed_should": [],
+      "output_text": "│\n◇  Doctor warnings ──────────────────────────────────────────╮\n│                                                            │\n│  - State dir migration skipped: target already exists      │\n│    (/Users/peterpan/.openclaw). Remove or merge manually.  │\n│                                                            │\n├────────────────────────────────────────────────────────────╯\n│\n◇  Doctor warnings ───────────────────────────────────────────────────╮\n│                                                                     │\n│  - channels.feishu.allowFrom: set to [\"*\"] (required by             │\n│    dmPolicy=\"open\")                                                 │\n│  - Run \"openclaw doctor --fix\" to add missing allowFrom wildcards.  │\n│                                                                     │\n├─────────────────────────────────────────────────────────────────────╯\nService: LaunchAgent (loaded)\nFile logs: /tmp/openclaw/openclaw-2026-02-23.log\nCommand: /opt/homebrew/Cellar/node/25.6.1/bin/node /Users/peterpan/AI/openclaw/dist/index.js gateway --port 18789\nService file: ~/Library/LaunchAgents/ai.openclaw.gateway.plist\nService env: OPENCLAW_GATEWAY_PORT=18789\n\nConfig (cli): ~/.openclaw/openclaw.json\nConfig (service): ~/.openclaw/openclaw.json\n\nGateway: bind=lan (0.0.0.0), port=18789 (service args)\nProbe target: ws://172.30.38.200:18789\nDashboard: http://172.30.38.200:18789/\nProbe note: bind=lan listens on 0.0.0.0 (all interfaces); probing via 172.30.38.200.\n\nRuntime: running (pid 99800, state active)\nWarm-up: launch agents can take a few seconds. Try again shortly.\n\nListening: *:18789\n\n\nTroubles: run openclaw status\nTroubleshooting: https://docs.openclaw.ai/troubleshooting\n"
+    }
+  ]
+}

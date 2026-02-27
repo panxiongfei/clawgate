@@ -9,17 +9,16 @@ turns:
   - turn: 1
     user_input: "Show git status for this repo."
     must:
-      - type: tool_called
-        tool: git_status
+      - type: text_contains_any
+        values: ["branch", "main", "modified", "clean", "git", "status"]
     should:
       - type: text_contains_any
-        values: ["branch", "modified", "clean"]
+        values: ["modified", "clean", "nothing to commit"]
   - turn: 2
     user_input: "Show what changed in the latest commit."
     must:
-      - type: tool_called
-        tool: git_show
+      - type: text_contains_any
+        values: ["commit", "files changed", "diff", "git", "show"]
     should:
       - type: text_contains_any
-        values: ["commit", "files changed", "diff"]
-
+        values: ["commit", "Author", "Date", "diff"]

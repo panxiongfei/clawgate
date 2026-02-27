@@ -69,6 +69,23 @@ def main() -> int:
     case_entries: list[dict[str, Any]] = []
     for case_file in discover_case_files(cases_root):
         payload = read_yaml(case_file)
+        # Handle multi-document YAML (test cases separated by ---)
+        if payload.get("_multi_doc"):
+            docs = payload.get("documents", [])
+            for doc in docs:
+                if not doc.get("enabled", True):
+                    continue
+                if doc.get("suite") not in suites:
+                    continue
+                case_entries.append(
+                    {
+                        "id": doc.get("id"),
+                        "suite": doc.get("suite"),
+                        "priority": doc.get("priority", "P1"),
+                        "path": str(case_file),
+                    }
+                )
+            continue
         if not payload.get("enabled", True):
             continue
         if payload.get("suite") not in suites:
@@ -86,6 +103,20 @@ def main() -> int:
         # Fallback to P0 enabled cases if mapping selected nothing.
         for case_file in discover_case_files(cases_root):
             payload = read_yaml(case_file)
+            # Handle multi-document YAML
+            if payload.get("_multi_doc"):
+                docs = payload.get("documents", [])
+                for doc in docs:
+                    if doc.get("enabled", True) and doc.get("priority") == "P0":
+                        case_entries.append(
+                            {
+                                "id": doc.get("id"),
+                                "suite": doc.get("suite"),
+                                "priority": doc.get("priority", "P1"),
+                                "path": str(case_file),
+                            }
+                        )
+                continue
             if payload.get("enabled", True) and payload.get("priority") == "P0":
                 case_entries.append(
                     {
